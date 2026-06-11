@@ -1,5 +1,6 @@
 import { PrismaClient } from "@/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import pg from "pg"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -12,7 +13,7 @@ function createPrismaClient() {
     return new PrismaClient({} as never)
   }
 
-  const pool = new (require("pg").Pool)({
+  const pool = new pg.Pool({
     connectionString,
     max: 3,
     idleTimeoutMillis: 10000,
