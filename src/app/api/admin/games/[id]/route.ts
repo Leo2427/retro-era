@@ -21,11 +21,11 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { title, titleEn, developer, publisher, releaseYear, description, gameplayText, storyText, coverImageUrl, platforms, genres, moves } = body
+    const { title, titleEn, developer, publisher, releaseYear, description, gameplayText, storyText, coverImageUrl, platforms, genres, moves, popular } = body
 
     await prisma.game.update({
       where: { id },
-      data: { title, titleEn: titleEn || null, developer, publisher, releaseYear, description, gameplayText, storyText, coverImageUrl },
+      data: { title, titleEn: titleEn || null, developer, publisher, releaseYear, description, gameplayText, storyText, coverImageUrl, popular },
     })
 
     if (platforms) {

@@ -192,23 +192,44 @@ function GamesContent() {
               ))}
             </div>
 
-            {/* 分页 */}
+            {/* 分页 — 百度风格 */}
             {totalPages > 1 && (
-              <div className="mt-10 flex items-center justify-center gap-2">
+              <div className="mt-10 flex items-center justify-center gap-1">
                 <button
                   onClick={() => setParam("page", String(page - 1))}
                   disabled={page <= 1}
-                  className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-border/50 disabled:opacity-30"
+                  className="rounded px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-border/50 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  ←
+                  &lt; 上一页
                 </button>
-                <span className="px-3 text-sm text-text-muted">{page} / {totalPages}</span>
+                {(() => {
+                  var items = []
+                  for (var p = 1; p <= totalPages; p++) {
+                    if (p === 1 || p === totalPages || Math.abs(p - page) <= 2) {
+                      if (items.length && p - items[items.length - 1] > 1) items.push(-1)
+                      items.push(p)
+                    }
+                  }
+                  return items.map((item, idx) =>
+                    item === -1 ? (
+                      <span key={"e" + idx} className="px-2 text-sm text-text-muted">…</span>
+                    ) : (
+                      <button
+                        key={item}
+                        onClick={() => setParam("page", String(item))}
+                        className={"min-w-[32px] rounded px-2 py-1.5 text-sm transition-colors " + (item === page ? "bg-accent text-white" : "text-text-muted hover:bg-border/50")}
+                      >
+                        {item}
+                      </button>
+                    )
+                  )
+                })()}
                 <button
                   onClick={() => setParam("page", String(page + 1))}
                   disabled={page >= totalPages}
-                  className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-border/50 disabled:opacity-30"
+                  className="rounded px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-border/50 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  →
+                  下一页 &gt;
                 </button>
               </div>
             )}

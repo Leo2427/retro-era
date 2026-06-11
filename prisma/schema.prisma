@@ -21,6 +21,7 @@ model Game {
   storyText     String?
   coverImageUrl String?
   screenshots   String[]
+  popular       Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

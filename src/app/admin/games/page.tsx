@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+import { PopularToggle } from "@/components/admin/PopularToggle"
 
 export default async function AdminGamesPage() {
   const games = await prisma.game.findMany({
@@ -34,6 +35,7 @@ export default async function AdminGamesPage() {
               <th className="px-4 py-3 font-medium">年份</th>
               <th className="px-4 py-3 font-medium">平台</th>
               <th className="px-4 py-3 font-medium">招式</th>
+              <th className="px-4 py-3 font-medium">热门</th>
               <th className="px-4 py-3 font-medium">操作</th>
             </tr>
           </thead>
@@ -56,12 +58,10 @@ export default async function AdminGamesPage() {
                 </td>
                 <td className="px-4 py-3 text-text-muted">{game.moveLists.length}</td>
                 <td className="px-4 py-3">
-                  <Link
-                    href={`/games/${game.slug}/edit`}
-                    className="text-accent hover:underline"
-                  >
-                    编辑
-                  </Link>
+                  <PopularToggle gameId={game.id} popular={game.popular} />
+                </td>
+                <td className="px-4 py-3">
+                  <Link href={"/games/" + game.slug + "/edit"} className="text-accent hover:underline">编辑</Link>
                 </td>
               </tr>
             ))}
