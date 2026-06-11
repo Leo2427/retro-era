@@ -1,23 +1,26 @@
 import { PrismaClient } from "@/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import pg from "pg"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 function createPrismaClient() {
-  let connectionString = process.env.DATABASE_URL
+  const connectionString = process.env.DATABASE_URL
 
   if (!connectionString) {
     return new PrismaClient({} as never)
   }
 
-  if (process.env.NODE_ENV === "production" && !connectionString.includes("sslmode=")) {
-    connectionString += connectionString.includes("?") ? "&" : "?"
-    connectionString += "sslmode=require"
-  }
+  const pool = new pg.Pool({
+    connectionString,
+    ssl: process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
+  })
 
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 
