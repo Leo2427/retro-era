@@ -12,10 +12,13 @@ function createPrismaClient() {
     return new PrismaClient({} as never)
   }
 
-  const adapter = new PrismaPg({
+  const pool = new (require("pg").Pool)({
     connectionString,
+    max: 3,
+    idleTimeoutMillis: 10000,
     ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 
