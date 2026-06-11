@@ -492,7 +492,77 @@ EMAIL_FROM="noreply@你的域名"
 
 ---
 
-## 十四、文档同步说明
+## 十四、服务概览与账号关系
+
+### 14.1 服务清单
+
+| 服务 | 用途 | 账户 | 付费状态 |
+|------|------|------|---------|
+| **GitHub** | 代码托管 | `Leo2427` | 免费 |
+| **Supabase** | PostgreSQL 数据库 + Storage 存储 | 项目 `mgyniiqtrnjzdyjkxbmr` | 免费（数据库 500MB，Storage 1GB） |
+| **Vercel** | Next.js 托管 + 自动部署 | GitHub 关联登录 | 免费（Hobby Plan） |
+| **Cloudflare** | DNS + CDN + SSL | 用户注册邮箱 | 免费 |
+| **Namesilo** | 域名注册商（retro-era.xyz） | 用户注册邮箱 | 付费（域名年费） |
+| **Resend** | 邮件发送（密码重置） | 用户注册邮箱 | 免费（100 封/天） |
+
+### 14.2 架构关系图
+
+```
+用户浏览器
+    ↓
+Cloudflare CDN（加速 + SSL）       ← 免费
+    ↓
+Vercel（Next.js SSR）              ← 免费
+    ├── GitHub 自动部署             ← Leo2427/retro-era
+    ├── env: 环境变量（见 13.2）
+    │
+    └── Supabase（数据库 + 存储）   ← 免费档
+        ├── PostgreSQL（游戏数据、用户、留言）
+        ├── Storage game-covers（封面图）
+        └── Storage avatars（头像 + 收款码）
+
+邮件服务：
+用户忘记密码 → Resend API → 发送重置邮件  ← 免费
+```
+
+### 14.3 域名配置关系
+
+```
+Namesilo 注册 → retro-era.xyz（年费）
+    ↓ NS 指向
+Cloudflare DNS → 管理 DNS 记录
+    ↓ CNAME @ / www
+Vercel → 绑定域名 + 自动 SSL 证书
+```
+
+### 14.4 关键配置备忘
+
+| 项目 | 位置 | 说明 |
+|------|------|------|
+| **数据库连接** | Vercel → Environment Variables → `DATABASE_URL` | Supabase 连接池地址 |
+| **Auth 密钥** | Vercel → `AUTH_SECRET` | 已生成随机 64 位字符串 |
+| **Supabase URL/Key** | Vercel → `NEXT_PUBLIC_SUPABASE_*` | Project Settings → API 获取 |
+| **Storage 上传密钥** | Vercel → `SUPABASE_SERVICE_ROLE_KEY` | 服务端密钥，绕过 RLS |
+| **邮件 API** | Vercel → `RESEND_API_KEY` | Resend Dashboard 获取 |
+| **发件地址** | Vercel → `EMAIL_FROM` | `noreply@retro-era.xyz` ✅ 已验证 |
+| **应用 URL** | Vercel → `NEXT_PUBLIC_APP_URL` | `https://retro-era.xyz` |
+| **Cloudflare SSL** | SSL/TLS → Full 模式 | 必须配置，否则 Vercel 检测到代理报错 |
+| **Cloudflare 代理** | DNS 记录 → 橙色云朵 ☁️ | 开启 CDN 加速，隐藏源站 IP |
+
+### 14.5 操作权限
+
+| 操作 | 谁可以做 | 入口 |
+|------|---------|------|
+| 代码修改推送 | 开发者 | GitHub |
+| 部署新版本 | 自动（push 触发） | Vercel |
+| 查看数据库 | 开发者 | Supabase Dashboard |
+| 修改域名 DNS | 域名所有者 | Cloudflare |
+| 续费域名 | 域名所有者 | Namesilo |
+| 管理邮箱 API | 邮箱所有者 | Resend Dashboard |
+
+---
+
+## 十五、文档同步说明
 
 > 本文件（plan.md）是项目的唯一技术文档，
 > 所有功能修改、新增、配置变更都应及时同步到此文档中。
