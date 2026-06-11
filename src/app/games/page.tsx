@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 
@@ -19,7 +19,7 @@ interface Game {
   genres: Genre[]
 }
 
-function GamesPageContent() {
+export default function GamesPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const composingRef = useRef(false)
@@ -220,10 +220,4 @@ function GamesPageContent() {
   )
 }
 
-export default function GamesPage() {
-  return (
-    <Suspense fallback={<div className="container-page py-10 text-sm text-text-muted">加载中...</div>}>
-      <GamesPageContent />
-    </Suspense>
-  )
-}
+
