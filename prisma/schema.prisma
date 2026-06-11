@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── 游戏 ──
+model Game {
+  id            String    @id @default(cuid())
+  title         String
+  titleEn       String?
+  slug          String    @unique
+  developer     String?
+  publisher     String?
+  releaseYear   Int?
+  description   String?
+  gameplayText  String?
+  storyText     String?
+  coverImageUrl String?
+  screenshots   String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  platforms GamePlatform[]
+  genres     GameGenre[]
+  moveLists  MoveList[]
+  videos     Video[]
+}
+
+// ── 出招表 ──
+model MoveList {
+  id          String @id @default(cuid())
+  gameId      String
+  character   String?
+  category    String
+  command     String
+  name        String?
+  description String?
+  damage      String?
+  order       Int    @default(0)
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+// ── 平台（多对多关联表）──
+model Platform {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  games GamePlatform[]
+}
+
+model GamePlatform {
+  gameId     String
+  platformId String
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, platformId])
+}
+
+// ── 类型（多对多关联表）──
+model Genre {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  games GameGenre[]
+}
+
+model GameGenre {
+  gameId  String
+  genreId String
+  game    Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  genre   Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, genreId])
+}
+
+// ── 用户 ──
+model User {
+  id        String   @id @default(cuid())
+  username  String?  @unique
+  email     String?  @unique
+  password  String?
+  avatarUrl String?
+  role      String   @default("user")
+  banned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  posts     ForumPost[]
+  comments  ForumComment[]
+  videos    Video[]
+  messages  Message[]
+}
+
+// ── Auth.js 所需模型 ──
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refreshToken      String? @map("refresh_token")
+  accessToken       String? @map("access_token")
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
+  scope             String?
+  idToken           String? @map("id_token")
+  sessionState      String? @map("session_state")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ── 密码重置令牌 ──
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([token])
+}
+
+// ── 页面内容（关于、打赏等）──
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique          // "about", "support" 等
+  title     String
+  content   String?
+  qrCodeUrl String?                    // 微信收款码图片 URL
+  updatedAt DateTime @updatedAt
+}
+
+// ── 留言板 ──
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([authorId])
+}
+
+// ── 扩展预留：论坛 ──
+model ForumPost {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments ForumComment[]
+
+  @@index([authorId])
+}
+
+model ForumComment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  authorId  String
+  parentId  String?
+  createdAt DateTime @default(now())
+
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+// ── 扩展预留：视频 ──
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  gameId      String?
+  uploaderId  String
+  createdAt   DateTime @default(now())
+
+  game     Game? @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  uploader User  @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+  @@index([uploaderId])
+}
