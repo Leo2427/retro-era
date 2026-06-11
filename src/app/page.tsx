@@ -59,7 +59,10 @@ export default async function Home() {
 
       {/* 最近添加 */}
       <section className="container-page mb-10 sm:mb-14">
-        <h2 className="mb-4 text-base font-semibold sm:text-lg">最近添加</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold sm:text-lg">最近添加</h2>
+          <Link href="/games" className="rounded-full bg-accent px-4 py-1.5 text-sm text-white transition-colors hover:bg-accent-hover">查看全部 →</Link>
+        </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6 lg:gap-4">
           {recentGames.map(game => <GameCard key={game.id} game={game} />)}
         </div>
