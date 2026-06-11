@@ -11,7 +11,7 @@ async function getRecentGames() {
 }
 
 async function getPopularGames() {
-  const ids = await prisma.$queryRawUnsafe<{id: string}[]>("SELECT id FROM \"Game\" WHERE popular = true LIMIT 12")
+  const ids = await prisma.$queryRaw<Array<{id: string}>>`SELECT id FROM "Game" WHERE popular = true LIMIT 12`
   if (ids.length === 0) return []
   return prisma.game.findMany({
     where: { id: { in: ids.map(r => r.id) } },

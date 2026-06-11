@@ -2,13 +2,15 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 export default async function PopularPage() {
-  // 使用原始 SQL 查询热门游戏，避免 Prisma 类型问题
-  const games = await prisma.$queryRawUnsafe<Array<{
-    id: string; title: string; slug: string; developer: string | null;
-    releaseYear: number | null; coverImageUrl: string | null
-  }>>(
-    "SELECT id, title, slug, developer, \"releaseYear\", \"coverImageUrl\" FROM \"Game\" WHERE popular = true ORDER BY title ASC"
-  )
+  // 使用 $queryRaw 模板语法获取热门游戏ID
+  const rows = await prisma.$queryRaw<Array<{id: string}>>`SELECT id FROM "Game" WHERE popular = true ORDER BY title ASC`
+
+  const games = rows.length > 0
+    ? await prisma.game.findMany({
+        where: { id: { in: rows.map(r => r.id) } },
+        include: { platforms: { include: { platform: true } }, genres: { include: { genre: true } } },
+      })
+    : []
 
   return (
     <div className="flex flex-1 flex-col">
