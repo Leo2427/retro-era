@@ -6,17 +6,18 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL
+  let connectionString = process.env.DATABASE_URL
 
   if (!connectionString) {
-    // 开发阶段允许没有数据库连接，运行时再报错
     return new PrismaClient({} as never)
   }
 
-  const adapter = new PrismaPg({
-    connectionString,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-  })
+  if (process.env.NODE_ENV === "production" && !connectionString.includes("sslmode=")) {
+    connectionString += connectionString.includes("?") ? "&" : "?"
+    connectionString += "sslmode=require"
+  }
+
+  const adapter = new PrismaPg({ connectionString })
   return new PrismaClient({ adapter })
 }
 
