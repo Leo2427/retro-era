@@ -1,7 +1,7 @@
 # RetroEra — 复古游戏信息网站 技术方案
 
 > 项目名称：RetroEra（怀旧时光 · 经典永存）
-> 最后更新：2026-06-10
+> 最后更新：2026-06-11
 > 说明：plan.md 是项目唯一技术文档，所有修改、新增、配置变更都应及时同步到此文件
 
 ---
@@ -176,6 +176,25 @@ model PasswordResetToken {
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+// 页面内容（关于、打赏等）
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String?
+  qrCodeUrl String?    // 微信收款码
+  updatedAt DateTime @updatedAt
+}
+
+// 留言板
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
 ```
 
 > **角色说明**：`user` = 普通注册用户，`admin` = 管理员（仅管理游戏），`super_admin` = 超级管理员（游戏+人员）
@@ -310,9 +329,9 @@ src/
 - [x] 12 款经典游戏种子数据
 - [x] 首页 / 游戏列表 / 游戏详情 + 出招表
 
-### 阶段 4：管理后台 — 游戏内容管理
+### 阶段 4：管理后台 — 游戏内容管理（✅ 已完成）
 
-游戏内容管理面向**内容管理员（editor）**和**超级管理员（admin）**。
+游戏内容管理面向**管理员（admin）**和**超级管理员（super_admin）**。
 
 | 功能 | 说明 | 涉及文件 |
 |------|------|---------|
@@ -335,9 +354,9 @@ DELETE /api/admin/games/[id]     — 删除游戏
 POST   /api/admin/games/[id]/upload  — 上传封面图
 ```
 
-### 阶段 5：管理后台 — 人员管理
+### 阶段 5：管理后台 — 人员管理（✅ 已完成）
 
-人员管理仅面向**超级管理员（admin）**。
+人员管理仅面向**超级管理员（super_admin）**。
 
 | 功能 | 说明 | 涉及文件 |
 |------|------|---------|
@@ -389,16 +408,25 @@ DELETE /api/admin/users/[id]      — 删除用户
                                     共 12 人  第 1/2 页
 ```
 
-### 阶段 6：用户系统（公共前台）
+### 阶段 6：用户系统（公共前台）（✅ 已完成）
 
 | 功能 | 说明 |
 |------|------|
 | 注册 | 邮箱 + 密码 + 用户名 |
 | 登录 | 邮箱密码登录，JWT Session |
-| 忘记密码 | 输入邮箱 → 生成一次性令牌（1h有效） → 邮件发送重置链接 → 用户设置新密码 |
+| 忘记密码 | Resend 邮件发送重置链接 |
 | 个人资料 | 头像上传、修改昵称 |
 | 受保护路由 | 未登录用户重定向到登录页 |
-| 权限守卫 | 非 editor/admin 访问管理后台时重定向或显示 403 |
+| 权限守卫 | 非 admin/super_admin 访问管理后台时重定向 |
+
+### 阶段 7：其他功能（✅ 已完成）
+
+| 功能 | 说明 | 权限 |
+|------|------|------|
+| 留言板 | 注册用户可留言，访客可浏览 | 超级管理员可删除 |
+| 关于页面编辑 | 标题 + 内容 + 微信收款码上传 | 仅超级管理员可编辑 |
+| 搜索与筛选 | 游戏库搜索、平台/类型筛选、分页 | 公开 |
+| 平台列表 | 按平台浏览游戏 | 公开 |
 
 ## 十三、部署指南
 
