@@ -9,7 +9,7 @@ async function getRecentGames() {
       genres: { include: { genre: true } },
     },
     orderBy: { createdAt: "desc" },
-    take: 13,
+    take: 12,
   })
   return games
 }
