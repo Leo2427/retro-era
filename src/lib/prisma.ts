@@ -12,7 +12,10 @@ function createPrismaClient() {
     return new PrismaClient({} as never)
   }
 
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = new PrismaPg({
+    connectionString,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  })
   return new PrismaClient({ adapter })
 }
 
