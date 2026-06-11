@@ -144,7 +144,7 @@ const updates = [
 
 async function main() {
   for (const [slug, title, titleEn, dev, year, desc] of updates) {
-    await p.game.update({ where: { slug }, data: { title, titleEn, developer: dev, releaseYear: year, description: desc } })
+    await p.game.update({ where: { slug: slug as string }, data: { title: title as string, titleEn: titleEn as string, developer: dev as string, releaseYear: year as number, description: desc as string } })
     console.log(`✅ ${slug}`)
   }
   await p.$disconnect()
