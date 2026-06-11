@@ -111,6 +111,7 @@ model Game {
   storyText      String?
   coverImageUrl  String?
   screenshots    String[]
+  popular        Boolean   @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
@@ -427,6 +428,8 @@ DELETE /api/admin/users/[id]      — 删除用户
 | 关于页面编辑 | 标题 + 内容 + 微信收款码上传 | 仅超级管理员可编辑 |
 | 搜索与筛选 | 游戏库搜索、平台/类型筛选、分页 | 公开 |
 | 平台列表 | 按平台浏览游戏 | 公开 |
+| 热门游戏 | 首页热门栏目 + /popular 页面 | 管理员/超级管理员可标记 |
+| 翻页美化 | 百度风格页码导航 | 公开 |
 
 ## 十三、部署指南
 
