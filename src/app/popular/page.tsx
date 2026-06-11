@@ -2,11 +2,13 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 export default async function PopularPage() {
-  const games = await prisma.game.findMany({
-    where: { popular: true },
-    include: { platforms: { include: { platform: true } }, genres: { include: { genre: true } } },
-    orderBy: { title: "asc" },
-  })
+  // 使用原始 SQL 查询热门游戏，避免 Prisma 类型问题
+  const games = await prisma.$queryRawUnsafe<Array<{
+    id: string; title: string; slug: string; developer: string | null;
+    releaseYear: number | null; coverImageUrl: string | null
+  }>>(
+    "SELECT id, title, slug, developer, \"releaseYear\", \"coverImageUrl\" FROM \"Game\" WHERE popular = true ORDER BY title ASC"
+  )
 
   return (
     <div className="flex flex-1 flex-col">
@@ -29,14 +31,7 @@ export default async function PopularPage() {
                     <span className="px-2 text-center text-xs text-text-muted">{game.title}</span>
                   )}
                 </div>
-                <p className="truncate text-xs font-medium text-text sm:text-sm">
-                  {game.title}{game.titleEn ? " / " + game.titleEn : ""}
-                </p>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {game.platforms.slice(0, 2).map((gp: any) => (
-                    <span key={gp.platform.id} className="rounded bg-border/50 px-1.5 py-0.5 text-[10px] text-text-muted">{gp.platform.name}</span>
-                  ))}
-                </div>
+                <p className="truncate text-xs font-medium text-text sm:text-sm">{game.title}</p>
               </Link>
             ))}
           </div>
