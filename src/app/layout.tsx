@@ -30,7 +30,19 @@ export const metadata: Metadata = {
     template: "%s — RetroEra",
   },
   description: "复古游戏信息数据库 — 游戏介绍、玩法、出招表，重温经典时光。",
+  keywords: ["复古游戏", "街机游戏", "出招表", "怀旧游戏", "RetroEra", "arcade games", "retro gaming"],
   icons: [{ rel: "icon", url: "/favicon.png", sizes: "128x128" }],
+  openGraph: {
+    title: "RetroEra — 怀旧时光 · 经典永存",
+    description: "复古游戏信息数据库 — 游戏介绍、玩法、出招表，重温经典时光。",
+    type: "website",
+    locale: "zh_CN",
+  },
+  twitter: {
+    card: "summary",
+    title: "RetroEra — 怀旧时光 · 经典永存",
+    description: "复古游戏信息数据库 — 游戏介绍、玩法、出招表，重温经典时光。",
+  },
 }
 
 export default async function RootLayout({

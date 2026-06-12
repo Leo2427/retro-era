@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
 import { BackButton } from "@/components/ui/BackButton"
 
@@ -13,6 +14,20 @@ async function getGame(slug: string) {
     },
   })
   return game
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const game = await prisma.game.findUnique({ where: { slug }, select: { title: true, titleEn: true, description: true } })
+  if (!game) return { title: "游戏未找到" }
+  return {
+    title: game.title,
+    description: (game.titleEn ? `${game.titleEn} - ` : "") + (game.description || "复古街机游戏资料"),
+    openGraph: {
+      title: game.title,
+      description: game.description || "复古街机游戏资料",
+    },
+  }
 }
 
 // 按角色分组出招表
