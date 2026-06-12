@@ -514,14 +514,28 @@ EMAIL_FROM="noreply@你的域名"
 | Vercel（海外节点） | 无需 ICP 备案 |
 | 国内服务器 | 必须 ICP 备案（2-4 周） |
 
-### 13.7 部署后检查清单
+### 13.7 SEO 配置
 
-- [ ] 网站能正常访问
-- [ ] 首页显示游戏列表
-- [ ] 注册/登录功能正常
-- [ ] 上传封面/头像正常
-- [ ] 管理后台可进入
-- [ ] 密码重置链接能发送（需配置邮件服务）
+**已完成的 SEO 优化：**
+
+| 项目 | 说明 | 文件 |
+|------|------|------|
+| robots.txt | 允许爬取公开页面，屏蔽 /admin/、/api/、/RetroEra-super | `src/app/robots.ts` |
+| sitemap.xml | 包含 518+ 游戏 + 6 静态页面 | `src/app/sitemap.ts` |
+| 独立标题/描述 | 每款游戏有独立的中英文 title 和 description | `games/[slug]/page.tsx` |
+| OG / Twitter 标签 | 社交分享卡片 | `layout.tsx` |
+| 关键词 | 中英文 SEO 关键词 | `layout.tsx` |
+| hreflang | 标记中英双语版本 | `games/[slug]/page.tsx` |
+| 结构化数据 | Schema.org VideoGame JSON-LD | `games/[slug]/page.tsx` |
+| 百度验证 | Baidu站点验证 meta 标签 | `layout.tsx` |
+
+**百度站长平台提交：**
+```
+1. 打开 https://ziyuan.baidu.com
+2. 添加网站 retro-era.xyz（HTML标签验证）
+3. 验证通过后提交 sitemap：
+   https://retro-era.xyz/sitemap.xml
+```
 
 ---
 
