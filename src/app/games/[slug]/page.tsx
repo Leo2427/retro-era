@@ -20,12 +20,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const game = await prisma.game.findUnique({ where: { slug }, select: { title: true, titleEn: true, description: true } })
   if (!game) return { title: "游戏未找到" }
+  const desc = game.description || "复古街机游戏资料"
+  const titleFull = game.titleEn ? `${game.title} / ${game.titleEn}` : game.title
+  const descEn = game.titleEn ? `${game.titleEn} - retro arcade game info, moves and guide` : ""
+  const descFull = desc + (descEn ? ` | ${descEn}` : "")
   return {
-    title: game.title,
-    description: (game.titleEn ? `${game.titleEn} - ` : "") + (game.description || "复古街机游戏资料"),
+    title: titleFull,
+    description: descFull,
+    keywords: [game.title, game.titleEn || "", "arcade game", "retro gaming", "街机游戏"].filter(Boolean).join(", "),
     openGraph: {
-      title: game.title,
-      description: game.description || "复古街机游戏资料",
+      title: titleFull,
+      description: descFull,
+      locale: "zh_CN",
+      siteName: "RetroEra",
+    },
+    alternates: {
+      languages: { "zh-CN": `https://retro-era.xyz/games/${slug}`, "en": `https://retro-era.xyz/games/${slug}` },
     },
   }
 }
