@@ -38,6 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "zh_CN",
   },
+  verification: { other: { "baidu-site-verification": "codeva-RwCc8qFgn1" } },
   twitter: {
     card: "summary",
     title: "RetroEra — 怀旧时光 · 经典永存",

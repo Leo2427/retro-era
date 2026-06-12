@@ -431,6 +431,7 @@ DELETE /api/admin/users/[id]      — 删除用户
 | 热门游戏 | 首页热门栏目 + /popular 页面 | 管理员/超级管理员可标记 |
 | 翻页美化 | 百度风格页码导航 | 公开 |
 | SEO 优化 | robots.txt + sitemap + 独立标题/描述/OG标签 | 公开 |
+| 结构化数据 | Schema.org VideoGame JSON-LD | 公开 |
 
 ## 十三、部署指南
 
