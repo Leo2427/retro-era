@@ -67,8 +67,27 @@ export default async function GameDetailPage({
 
   const moveGroups = game.moveLists.length > 0 ? groupMovesByCharacter(game.moveLists) : null
 
+  // 结构化数据 JSON-LD (Schema.org VideoGame)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    name: game.title,
+    alternateName: game.titleEn || undefined,
+    description: game.description || undefined,
+    image: game.coverImageUrl || undefined,
+    genre: game.genres.map((gg) => gg.genre.name),
+    gamePlatform: game.platforms.map((gp) => gp.platform.name),
+    datePublished: game.releaseYear?.toString() || undefined,
+    author: game.developer ? { "@type": "Organization", name: game.developer } : undefined,
+    publisher: game.publisher ? { "@type": "Organization", name: game.publisher } : undefined,
+  }
+
   return (
     <div className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="container-page py-10 sm:py-12">
         <BackButton />
         {/* 面包屑 */}
